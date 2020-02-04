@@ -1,15 +1,32 @@
 """
 Шаблон
 
+
+1. вывод операции в labelBig +
+2. вывод в окно историй +
+3. +-  +
+
+4. x^2  +
+5. x!  +
+6. sqrt    +
+7. 1/x
+
+8. сделать скобки вместо x! и 1/x    +
+9. ↑   +
+10. комментарии
+11. дизайн
+
+12. везде защиту от дурака
 """
 import sys
+a=0
 from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QIcon
 
 size=80
-board=15
+board=10
 
 countRowButton=5
 countColumnButton=5
@@ -35,7 +52,9 @@ class Main(QWidget):
     def calculation(self):
         sender=self.sender()
         key=sender.text()
+        self.buttonList[4][4].setAutoDefault(True)
         print(key)
+
         #вычесления
         if key =="=":
             try :
@@ -43,12 +62,29 @@ class Main(QWidget):
                     output = (self.labelBig.text()+self.labelSmall.text())
                 else:
                     output = (self.labelBig.text()+'('+self.labelSmall.text()+')')
+                countOpenBrackets=output.count("(")
+                countClosedBrackets=output.count(")")
+                if countOpenBrackets>countClosedBrackets:
+                    output+=(countOpenBrackets-countClosedBrackets)*")"
                 result = eval("*".join(("/".join(("**".join(output.split("^"))).split("÷"))).split("×")))
                 # result= output.split("^")
                 # result= "**".join(result)
                 self.labelBig.setText(output+"=")
                 self.labelSmall.setText(str(result))
-                self.labelHistory.setText(output+"="+str(result)+"\n"+self.labelHistory.text())
+                #добавление в labelHistory
+                historyBefore=(output+"="+str(result))
+                historyAfter=''
+                counter=0
+                for char in historyBefore:
+                    counter+=1
+                    historyAfter+=char
+                    if counter%21==0:
+                         historyAfter+='\n'
+                         counter=0
+                    elif char == "=":
+                        historyAfter=historyAfter[:-1]+'\n='
+                        counter=0
+                self.labelHistory.setText(historyAfter+"\n\n"+self.labelHistory.text())
             except:
                 print(output)
         #смена знака
@@ -66,6 +102,27 @@ class Main(QWidget):
                 for i in range(1,int(fact)+1):
                     resultFact*=i
                 self.labelSmall.setText(str(resultFact))
+
+
+        #скобки
+        elif key == "(":
+            if self.labelBig.text() != '':
+                if self.labelBig.text()[-1] == ')':
+                    self.labelBig.setText(self.labelBig.text() + '*(')
+                else:
+                    self.labelBig.setText(self.labelBig.text() + '(')
+            else:
+                self.labelBig.setText('(')
+        elif key == ")":
+                countOpenBrackets = (list(self.labelBig.text())).count('(')
+                countClosedBrackets = (list(self.labelBig.text())).count(')')
+
+                if self.labelBig.text() != '':
+                    if self.labelBig.text()[-1] == '(':
+                        self.labelBig.setText(self.labelBig.text() + '0' + ')')
+                    elif countClosedBrackets < countOpenBrackets:
+                        self.labelBig.setText(self.labelBig.text() + self.labelSmall.text() + ')')
+                        self.labelSmall.setText('')
         #корень
         elif key=="√x":
             if self.labelSmall.text()!="":
@@ -73,17 +130,31 @@ class Main(QWidget):
                 resultRoot**=0.5
                 print(resultRoot)
                 self.labelSmall.setText(str(resultRoot))
-
+        elif key=="⅟ₓ":
+            try:
+                if self.labelSmall.text()!="" or self.labelSmall.text()!="0":
+                    resultRoot=float(self.labelSmall.text())
+                    resultRoot=1/resultRoot
+                    print(resultRoot)
+                    self.labelSmall.setText(str(resultRoot))
+            except ZeroDivisionError:
+                pass
         #исключение множественности точек
         elif key=="." and key not in self.labelSmall.text():
             self.labelSmall.setText(self.labelSmall.text()+key)
         #ввод цифр
-        elif key in "1234567890()":
+        elif key in "1234567890":
             if '=' not in self.labelBig.text():
                 self.labelSmall.setText(self.labelSmall.text()+key)
+                if self.labelBig.text()!="":
+                    if self.labelBig.text()[-1]==")":
+                        self.labelBig.setText(self.labelBig.text()+"×")
+
             else:
                 self.labelBig.clear();
                 self.labelSmall.setText(key)
+
+
         # очистка окон кроме истории
         elif key=="C":
             self.labelSmall.setText("")
@@ -95,7 +166,7 @@ class Main(QWidget):
                 self.buttonList[3][4].setText(")")
             else:
                 self.buttonList[3][3].setText('X!')
-                self.buttonList[3][4].setText('1/X')
+                self.buttonList[3][4].setText('⅟ₓ')
         # удаление последнего символа
         elif key=="<":
             self.labelSmall.setText(self.labelSmall.text()[:-1])
@@ -124,13 +195,13 @@ class Main(QWidget):
                 else:
                     self.labelBig.setText('('+self.labelSmall.text()+')'+key)
                     self.labelSmall.setText("")
-                    
+
     def __init__(self):                                                           #создание окна
         super().__init__()
         self.initUI()
         self.setWindowIcon(QIcon('qww.jpg'))
         self.resize(QSize(widthWindow, hightWindow)) #..........................................Размер окна (Ширина, Высота)
-        self.setWindowTitle('калькулятор') #......................................Заголовок окна
+        self.setWindowTitle('калькулятор 3000') #......................................Заголовок окна
 
 
     def initUI(self):
@@ -208,10 +279,11 @@ class Main(QWidget):
                         ['4','5','6','X²','^'],
                         ['1','2','3','(',')'],
                         ['.','0','↑','√x','=']]
-
         self.buttonList=[]
+
         for row in range(countRowButton):
             self.buttonList.append([])
+
             for col in range(countColumnButton):
                 btn = QPushButton(buttonTextList[row][col],self,objectName=("button"+str(row)+str(col)))
                 btn.resize(widthButton,hightButton)
@@ -219,6 +291,8 @@ class Main(QWidget):
                 btn.move(board+(board+widthButton)*col,hightWindow*3//8+(board + hightButton)*row)
                 self.buttonList[row].append(btn)
                 self.buttonList[row][col].show()
+
+
 
 
 # Выполнение программы

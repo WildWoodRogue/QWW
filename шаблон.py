@@ -25,8 +25,8 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QIcon
 
-size=80
-board=10
+size=65
+board=5
 
 countRowButton=5
 countColumnButton=5
@@ -66,6 +66,7 @@ class Main(QWidget):
                 countClosedBrackets=output.count(")")
                 if countOpenBrackets>countClosedBrackets:
                     output+=(countOpenBrackets-countClosedBrackets)*")"
+
                 result = eval("*".join(("/".join(("**".join(output.split("^"))).split("÷"))).split("×")))
                 # result= output.split("^")
                 # result= "**".join(result)
@@ -130,6 +131,14 @@ class Main(QWidget):
                 resultRoot**=0.5
                 print(resultRoot)
                 self.labelSmall.setText(str(resultRoot))
+        #X²
+        elif key=="X²":
+            if self.labelSmall.text()!="":
+                resultRoot=float(self.labelSmall.text())
+                resultRoot**=2
+                print(resultRoot)
+                self.labelSmall.setText(str(resultRoot))
+        #1/X
         elif key=="⅟ₓ":
             try:
                 if self.labelSmall.text()!="" or self.labelSmall.text()!="0":
@@ -160,13 +169,15 @@ class Main(QWidget):
             self.labelSmall.setText("")
             self.labelBig.setText("")
         # смена функционала
-        elif key=="↑":
-            if self.buttonList[3][3].text()=="X!":
-                self.buttonList[3][3].setText("(")
-                self.buttonList[3][4].setText(")")
+        elif key=="↑" or key=="↓":
+            if self.buttonList[2][3].text()=="X!":
+                self.buttonList[2][3].setText("X²")
+                self.buttonList[2][4].setText("^")
+                self.buttonList[4][2].setText("↓")
             else:
-                self.buttonList[3][3].setText('X!')
-                self.buttonList[3][4].setText('⅟ₓ')
+                self.buttonList[2][3].setText('X!')
+                self.buttonList[2][4].setText('⅟ₓ')
+                self.buttonList[4][2].setText("↑")
         # удаление последнего символа
         elif key=="<":
             self.labelSmall.setText(self.labelSmall.text()[:-1])
@@ -244,7 +255,7 @@ class Main(QWidget):
             QPushButton{
             background-color: #ee6e40;
             color: black;
-            border-radius: 35px;
+            border-radius: 30px;
             border: 5px solid;
 
             font-size: 25px;

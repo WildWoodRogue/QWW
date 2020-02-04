@@ -1,32 +1,15 @@
 """
 Шаблон
 
-
-1. вывод операции в labelBig +
-2. вывод в окно историй +
-3. +-  +
-
-4. x^2  +
-5. x!  +
-6. sqrt    +
-7. 1/x
-
-8. сделать скобки вместо x! и 1/x    +
-9. ↑   +
-10. комментарии
-11. дизайн
-
-12. везде защиту от дурака
 """
 import sys
-
 from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QIcon
 
 size=80
-board=10
+board=15
 
 countRowButton=5
 countColumnButton=5
@@ -60,7 +43,6 @@ class Main(QWidget):
                     output = (self.labelBig.text()+self.labelSmall.text())
                 else:
                     output = (self.labelBig.text()+'('+self.labelSmall.text()+')')
-
                 result = eval("*".join(("/".join(("**".join(output.split("^"))).split("÷"))).split("×")))
                 # result= output.split("^")
                 # result= "**".join(result)
@@ -142,13 +124,13 @@ class Main(QWidget):
                 else:
                     self.labelBig.setText('('+self.labelSmall.text()+')'+key)
                     self.labelSmall.setText("")
-
+                    
     def __init__(self):                                                           #создание окна
         super().__init__()
         self.initUI()
         self.setWindowIcon(QIcon('qww.jpg'))
         self.resize(QSize(widthWindow, hightWindow)) #..........................................Размер окна (Ширина, Высота)
-        self.setWindowTitle('калькулятор 3000') #......................................Заголовок окна
+        self.setWindowTitle('калькулятор') #......................................Заголовок окна
 
 
     def initUI(self):
@@ -226,6 +208,7 @@ class Main(QWidget):
                         ['4','5','6','X²','^'],
                         ['1','2','3','(',')'],
                         ['.','0','↑','√x','=']]
+
         self.buttonList=[]
         for row in range(countRowButton):
             self.buttonList.append([])

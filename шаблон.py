@@ -13,17 +13,18 @@
 
 8. сделать скобки вместо x! и 1/x    +
 9. ↑   +
-10. комментарии
-11. дизайн
+10. комментарии +
+11. дизайн   +
 
-12. везде защиту от дурака
+12. везде защиту от дурака   +
 """
 import sys
 a=0
-from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox
+from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox,QLCDNumber,QLineEdit,QGridLayout
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QIcon
+
 
 size=65
 board=5
@@ -52,7 +53,8 @@ class Main(QWidget):
     def calculation(self):
         sender=self.sender()
         key=sender.text()
-        self.buttonList[4][4].setAutoDefault(True)
+        self.buttonList[4][4].setAutoDefault(self.buttonList[4][4].click,True)
+        self.labelSmall.returnPressed.connect(self.buttonList[4][4].click)
         print(key)
 
         #вычесления
@@ -229,7 +231,7 @@ class Main(QWidget):
                 border: 5px solid;
                 }
 
-            QLabel {
+            QLineEdit {
                 background-color: #6b0000;
                 border-radius: 20px;
                 color:#fff;
@@ -274,7 +276,7 @@ class Main(QWidget):
         self.labelBig.setFont(QFont("Trattatello",size//8))
         self.labelBig.show()
 
-        self.labelSmall=QLabel("",self,objectName="labelSmall")
+        self.labelSmall=QLineEdit("",self,objectName="labelSmall")
         self.labelSmall.resize(widthLabelSmall,hightLabelSmall)
         self.labelSmall.move(board,board+hightWindow//4)
         self.labelSmall.setFont(QFont("Trattatello",size//4))

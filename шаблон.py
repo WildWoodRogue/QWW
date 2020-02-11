@@ -29,7 +29,7 @@ hightLabelHistory=hightWindow*7//8- 2*board
 
 class Calculator(QWidget):
     def point(self,key):
-        if key not in self.labelSmall.text():
+        if key not in self.labelSmall.text() and self.labelSmall.text()!="":
             self.labelSmall.setText(self.labelSmall.text()+key)
     def brackets(self,key):
         if key == "(":
@@ -84,10 +84,10 @@ class Calculator(QWidget):
                 if self.labelBig.text()[-1]==")":
                     self.labelBig.setText(self.labelBig.text()+"×")
 
+
         else:
             self.labelBig.clear();
             self.labelSmall.setText(key)
-
     #
     def score(self):
         """счёт по нажатию равно или enter"""
@@ -98,8 +98,10 @@ class Calculator(QWidget):
                 output = (self.labelBig.text()+'('+self.labelSmall.text()+')')
             countOpenBrackets=output.count("(")
             countClosedBrackets=output.count(")")
-            if countOpenBrackets>countClosedBrackets:
+            if countOpenBrackets>countClosedBrackets and "1234567890" in self.labelSmall.text():
                 output+=(countOpenBrackets-countClosedBrackets)*")"
+            else:
+                output+="0"+(countOpenBrackets-countClosedBrackets)*")"
 
             result = eval("*".join(("/".join(("**".join(output.split("^"))).split("÷"))).split("×")))
             self.labelBig.setText(output+"=")
@@ -168,12 +170,14 @@ class Calculator(QWidget):
         #факториал
         elif key=='X!':
             if self.labelSmall.text()!="":
-                resultFact=1
-                fact=str(self.labelSmall.text())
-                for i in range(1,int(fact)+1):
-                    resultFact*=i
-                self.labelSmall.setText(str(resultFact))
-
+                try:
+                    resultFact=1
+                    fact=str(self.labelSmall.text())
+                    for i in range(1,int(fact)+1):
+                        resultFact*=i
+                    self.labelSmall.setText(str(resultFact))
+                except:
+                    pass
 
         #скобки
         elif key in '()':

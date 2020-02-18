@@ -2,7 +2,7 @@
 Приложение 'Калькулятор'
 """
 import sys
-from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox,QLCDNumber,QLineEdit,QGridLayout
+from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox,QLCDNumber,QLineEdit,QGridLayout,QMainWindow,QAction, qApp
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont, QIcon
 
@@ -27,7 +27,49 @@ hightLabelSmall=hightWindow//8- 2*board
 widthLabelHistory = widthWindow*3//8- 2*board
 hightLabelHistory=hightWindow*7//8- 2*board
 
-class Calculator(QWidget):
+
+
+class Calculator(QMainWindow):
+
+
+    def Big(self):
+
+        if self.buttonAdd.text()=="add":
+
+            bigWidthWindow=widthWindow+(widthWindow//3)
+            self.labelHistory.move(bigWidthWindow*(9/2)//7+board,hightWindow//8+board)
+            self.resize(QSize(widthWindow+(widthWindow//((275/105)))-(widthWindow+(widthWindow//2))/10, hightWindow))
+            # self.buttonAdd.setText("add")
+            self.buttonList[0][6].show()
+            self.buttonList[1][6].show()
+            self.buttonList[2][6].show()
+            self.buttonList[3][6].show()
+            self.buttonList[4][6].show()
+            self.buttonList[0][5].show()
+            self.buttonList[1][5].show()
+            self.buttonList[2][5].show()
+            self.buttonList[3][5].show()
+            self.buttonList[4][5].show()
+
+            self.buttonAdd.setText("less")
+
+        elif self.buttonAdd.text()=="less":
+            self.labelHistory.move(widthWindow*5//8+board,hightWindow//8+board)
+            self.resize(QSize(widthWindow, hightWindow))
+            self.buttonAdd.setText("add")
+            self.buttonList[0][6].hide()
+            self.buttonList[1][6].hide()
+            self.buttonList[2][6].hide()
+            self.buttonList[3][6].hide()
+            self.buttonList[4][6].hide()
+            self.buttonList[0][5].hide()
+            self.buttonList[1][5].hide()
+            self.buttonList[2][5].hide()
+            self.buttonList[3][5].hide()
+            self.buttonList[4][5].hide()
+
+    def deleteHistory(self):
+        self.labelHistory.setText("")
     def point(self,key):
         if key not in self.labelSmall.text() and self.labelSmall.text()!="":
             self.labelSmall.setText(self.labelSmall.text()+key)
@@ -98,14 +140,15 @@ class Calculator(QWidget):
                 output = (self.labelBig.text()+'('+self.labelSmall.text()+')')
             countOpenBrackets=output.count("(")
             countClosedBrackets=output.count(")")
-            if countOpenBrackets>countClosedBrackets and "1234567890" in self.labelSmall.text():
+            if countOpenBrackets>countClosedBrackets and "1234567890" in self.labelSmall.text() and  self.labelSmall.text():
                 output+=(countOpenBrackets-countClosedBrackets)*")"
             else:
-                output+="0"+(countOpenBrackets-countClosedBrackets)*")"
+                if self.labelSmall.text()[0]=="(":
+                    output+="0"+(countOpenBrackets-countClosedBrackets)*")"
 
             result = eval("*".join(("/".join(("**".join(output.split("^"))).split("÷"))).split("×")))
             self.labelBig.setText(output+"=")
-            self.labelSmall.setText(str(result))
+            self.labelSmall.setText(str(int(result)))
             #добавление в labelHistory
             historyBefore=(output+"="+str(result))
             historyAfter=''
@@ -239,8 +282,12 @@ class Calculator(QWidget):
     def __init__(self):                                                           #создание окна
         super().__init__()
         self.initUI()
+
+
+
         #self.setWindowIcon(QIcon('qww.jpg'))
-        self.resize(QSize(widthWindow, hightWindow)) #..........................................Размер окна (Ширина, Высота)
+        self.resize(QSize(widthWindow, hightWindow))
+        self.setFixedSize(widthWindow,hightWindow) #..........................................Размер окна (Ширина, Высота)
         self.setWindowTitle('калькулятор') #......................................Заголовок окна
 
 
@@ -281,9 +328,12 @@ class Calculator(QWidget):
             QPushButton{
             background-color: #ee6e40;
             color: black;
-            border-radius: 30px;
+            border-radius: 13px;
             border: 5px solid;
             font-size: 25px;
+            }
+            #fileMenu{
+            background-color: #fff;
             }
         """)
 
@@ -304,14 +354,20 @@ class Calculator(QWidget):
         self.labelHistory.resize(widthLabelHistory,hightLabelHistory)
         self.labelHistory.move(widthWindow*5//8+board,hightWindow//8+board)
         self.labelHistory.show()
-        #создание кнопок
-        buttonTextList=[['+','-','×','÷','C'],
-                        ['7','8','9','±','<'],
-                        ['4','5','6','X²','^'],
-                        ['1','2','3','(',')'],
-                        ['.','0','↑','√x','=']]
-        self.buttonList=[]
 
+
+
+
+        #
+        #создание кнопок
+        countRowButton=5
+        countColumnButton=7
+        buttonTextList=[['+','-','×','÷','C',"1","6t"],
+                        ['7','8','9','±','<',"2","ed"],
+                        ['4','5','6','X²','^',"3","er"],
+                        ['1','2','3','(',')',"4","qw"],
+                        ['.','0','↑','√x','=',"5","ww"]]
+        self.buttonList=[]
         for row in range(countRowButton):
             self.buttonList.append([])
 
@@ -323,6 +379,45 @@ class Calculator(QWidget):
                 self.buttonList[row].append(btn)
                 self.buttonList[row][col].show()
 
+        self.buttonList[0][6].hide()
+        self.buttonList[1][6].hide()
+        self.buttonList[2][6].hide()
+        self.buttonList[3][6].hide()
+        self.buttonList[4][6].hide()
+        self.buttonList[0][5].hide()
+        self.buttonList[1][5].hide()
+        self.buttonList[2][5].hide()
+        self.buttonList[3][5].hide()
+        self.buttonList[4][5].hide()
+
+        self.buttonDeleteHistory=QPushButton('del',self)
+        self.buttonDeleteHistory.resize(widthWindow//9,widthWindow//9)
+        self.buttonDeleteHistory.move(widthWindow-(widthWindow//8),1)
+        self.buttonDeleteHistory.clicked.connect(self.deleteHistory)
+
+        self.buttonAdd=QPushButton('add',self)
+        self.buttonAdd.resize(widthWindow//9,widthWindow//9)
+        self.buttonAdd.move(widthWindow-(widthWindow//4),1)
+        self.buttonAdd.clicked.connect(self.Big)
+
+        self.buttonNewWindow=QPushButton('???',self)
+        self.buttonNewWindow.resize(widthWindow//9,widthWindow//9)
+        self.buttonNewWindow.move(widthWindow-(widthWindow//(26/10)),1)
+        self.buttonNewWindow.clicked.connect(self.buts)
+
+        exitAction = QAction( '&Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(qApp.quit)
+
+        self.statusBar()
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAction)
+        fileMenu.show()
+    def buts(self):
+        print("1")
 
 
 
@@ -332,3 +427,21 @@ if __name__ == '__main__':
     calc = Calculator()
     calc.show()
     sys.exit(window.exec_())
+
+class addWindow(QMainWindow):
+     def __init__(self):
+        super().__init__()
+        self.initUI()
+
+     def initUI(self):
+
+        self.setGeometry(300, 300, 300, 220)
+        self.setWindowTitle('Icon')
+
+
+        self.show()
+if __name__ == '__main__':
+    window2 = QApplication(sys.argv)
+    calc2 = addWindow()
+    calc2.show()
+    sys.exit(window2.exec_())

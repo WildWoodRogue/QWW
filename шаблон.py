@@ -2,6 +2,7 @@
 """
 Приложение 'Калькулятор'
 """
+
 import sys
 from PyQt5.QtWidgets import QApplication,QLabel,QWidget, QPushButton,QMessageBox,QLCDNumber,QLineEdit,QGridLayout,QMainWindow,QAction, qApp
 from PyQt5.QtCore import QSize

@@ -4,6 +4,7 @@
 """
 
 import sys
+import math
 from PyQt5.QtWidgets import QFileDialog, QApplication, QLabel, QWidget, QPushButton, QMessageBox, QLCDNumber, QLineEdit, QGridLayout, QMainWindow, QAction, qApp
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont, QIcon
@@ -39,9 +40,11 @@ class Calculator(QMainWindow):
 
     # ???
     def buts(self):
+        """ """
         print("1")
     # Сохранение файла
     def saveFileDialog(self):
+        """ """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self,"QFileDialog.getSaveFileName()","","Text Files (*.txt)", options=options)
@@ -49,6 +52,7 @@ class Calculator(QMainWindow):
         file.write(self.labelHistory.text())
     # Открытие файла
     def openFile(self):
+        """ """
         fileName = QFileDialog.getOpenFileName()
         print(str(fileName[0]))
         file = open(str(fileName[0]),'r')
@@ -56,13 +60,14 @@ class Calculator(QMainWindow):
         self.labelHistory.setText(string)
     # Расширение окна
     def expansion(self):
+        """ """
         if self.buttonAdd.text()=="→":
 
-            bigWidthWindow = widthWindow+(size*countAdditionalColumnButton)
-            self.labelHistory.move((widthButton+board)*(countColumnButton+countAdditionalColumnButton)+board,hightWindow//8+board+heigthMenuBar)
-            self.buttonDeleteHistory.move(widthWindow-(widthWindow//8)+(size*countAdditionalColumnButton),heigthMenuBar+board)
-            self.buttonAdd.move(widthWindow-(widthWindow//4)+(size*countAdditionalColumnButton),heigthMenuBar+board)
-            self.buttonNewWindow.move(widthWindow-(widthWindow//(26/10))+(size*countAdditionalColumnButton),heigthMenuBar+board)
+            bigWidthWindow = widthWindow+(size*countAdditionalColumnButton*2)
+            self.labelHistory.move((widthButton+board)*(countColumnButton+2*countAdditionalColumnButton)+board,hightWindow//8+board+heigthMenuBar)
+            self.buttonDeleteHistory.move(widthWindow-(widthWindow//8)+(2*size*countAdditionalColumnButton),heigthMenuBar+board)
+            self.buttonAdd.move(widthWindow-(widthWindow//4)+(2*size*countAdditionalColumnButton),heigthMenuBar+board)
+            self.buttonNewWindow.move(widthWindow-(widthWindow//(26/10))+(2*size*countAdditionalColumnButton),heigthMenuBar+board)
 
             self.resize(QSize(bigWidthWindow, hightWindow+heigthMenuBar))
             self.setFixedSize(bigWidthWindow, hightWindow+heigthMenuBar)
@@ -85,13 +90,16 @@ class Calculator(QMainWindow):
                     self.buttonList[row][countColumnButton+col].hide()
     # Кнопка удаления истории
     def deleteHistory(self):
+        """ """
         self.labelHistory.setText("")
     # Точка
     def point(self,key):
+        """ """
         if key not in self.labelSmall.text() and self.labelSmall.text()!="":
             self.labelSmall.setText(self.labelSmall.text()+key)
     # Скобки
     def brackets(self,key):
+        """ """
         if key == "(":
             if self.labelBig.text() != '':
                 if self.labelBig.text()[-1] == ')':
@@ -112,6 +120,7 @@ class Calculator(QMainWindow):
                         self.labelSmall.setText('')
     # Арифметика
     def signs(self,key):
+        """ """
         if "-" not in self.labelSmall.text():
             if '=' not in self.labelBig.text():
 
@@ -137,10 +146,11 @@ class Calculator(QMainWindow):
                 self.labelSmall.setText("")
     # Удаление последнего символа
     def deleteLastChar(self):
+        """ """
         self.labelSmall.setText(self.labelSmall.text()[:-1])
     # Числа
     def numbers(self,key):
-        """"""
+        """ """
         if '=' not in self.labelBig.text():
             self.labelSmall.setText(self.labelSmall.text()+key)
             if self.labelBig.text()!="":
@@ -230,14 +240,10 @@ class Calculator(QMainWindow):
                 else:
                     self.labelSmall.setText("-"+self.labelSmall.text())
         # Факториал
-        elif key=='х!':
+        elif key=='x!':
             if self.labelSmall.text()!="":
                 try:
-                    resultFact=1
-                    fact=str(self.labelSmall.text())
-                    for i in range(1,int(fact)+1):
-                        resultFact*=i
-                    self.labelSmall.setText(str(resultFact))
+                    self.labelSmall.setText(str(math.factorial(int(self.labelSmall.text()))))
                 except:
                     pass
         # Cкобки
@@ -246,16 +252,20 @@ class Calculator(QMainWindow):
         # Корень
         elif key=="√x":
             if self.labelSmall.text()!="":
-                resultRoot=float(self.labelSmall.text())
-                resultRoot**=0.5
-                print(resultRoot)
+                resultRoot=math.sqrt(float(self.labelSmall.text()))
+                # resultRoot**=0.5
+                # print(resultRoot)
+                if resultRoot%1 == 0:
+                    resultRoot = int(resultRoot)
                 self.labelSmall.setText(str(resultRoot))
         # X²
         elif key=="x²":
             if self.labelSmall.text()!="":
-                resultRoot=float(self.labelSmall.text())
-                resultRoot**=2
-                print(resultRoot)
+                resultRoot = float(self.labelSmall.text())
+                resultRoot **= 2
+                #print(resultRoot)
+                if resultRoot%1 == 0:
+                    resultRoot = int(resultRoot)
                 self.labelSmall.setText(str(resultRoot))
         # 1/X
         elif key=="⅟ₓ":
@@ -267,11 +277,105 @@ class Calculator(QMainWindow):
                     self.labelSmall.setText(str(resultRoot))
             except ZeroDivisionError:
                 pass
-        # Исключение множественности точек
+        # Точка
         elif key==".":
             self.point(key)
+        # xʸ
+        elif key == "xʸ":
+            if "-" not in self.labelSmall.text():
+                if '=' not in self.labelBig.text():
+
+                    if self.labelSmall.text()!='' and (self.labelSmall.text() !="-"):
+                        self.labelBig.setText(self.labelBig.text()+self.labelSmall.text()+"^")
+                        self.labelSmall.setText("")
+                    else:
+                        if key=="-":
+                            self.labelSmall.setText('-')
+                else:
+                    self.labelBig.setText(self.labelSmall.text()+"^")
+                    self.labelSmall.setText("")
+            else:
+                if '=' not in self.labelBig.text():
+                    if self.labelSmall.text()!='' and (self.labelSmall.text() !="-"):
+                        self.labelBig.setText(self.labelBig.text()+'('+self.labelSmall.text()+')'+"^")
+                        self.labelSmall.setText("")
+                    else:
+                        if key=="-":
+                            self.labelSmall.setText('-')
+                else:
+                    self.labelBig.setText('('+self.labelSmall.text()+')'+"^")
+                    self.labelSmall.setText("")
+        # ʸ√x
+        elif key == "ʸ√x": # ???
+            pass
+        # exp(x)
+        elif key == "eˣ":
+            if self.labelSmall.text()!="":
+                resultRoot=math.exp(float(self.labelSmall.text()))
+                if resultRoot%1 == 0:
+                    resultRoot = int(resultRoot)
+                self.labelSmall.setText(str(resultRoot))
+        # ln(x)
+        elif key == "ln(x)":
+            if self.labelSmall.text()!="":
+                resultRoot=math.log(float(self.labelSmall.text()))
+                if resultRoot%1 == 0:
+                    resultRoot = int(resultRoot)
+                self.labelSmall.setText(str(resultRoot))
+        # 10^x
+        elif key == "10ˣ":
+            if self.labelSmall.text()!="":
+                resultRoot=10**(float(self.labelSmall.text()))
+                if resultRoot%1 == 0:
+                    resultRoot = int(resultRoot)
+                self.labelSmall.setText(str(resultRoot))
+        # lg(x)
+        elif key == "lg(x)":
+            if self.labelSmall.text()!="":
+                resultRoot=math.log10(float(self.labelSmall.text()))
+                if resultRoot%1 == 0:
+                    resultRoot = int(resultRoot)
+                self.labelSmall.setText(str(resultRoot))
+        # sin(x)
+        elif key == "sin(x)":
+            pass
+        # cos(x)
+        elif key == "cos(x)":
+            pass
+        # tg(x)
+        elif key == "tg(x)":
+            pass
+        # ctg(x)
+        elif key == "ctg(x)":
+            pass
+        # arcsin(x)
+        elif key == "arcsin(x)":
+            pass
+        # arccos(x)
+        elif key == "arccos(x)":
+            pass
+        # arctg(x)
+        elif key == "arctg(x)":
+            pass
+        # arcctg(x)
+        elif key == "arcctg(x)":
+            pass
+        # sh(x)
+        elif key == "sh(x)":
+            pass
+        # ch(x)
+        elif key == "ch(x)":
+            pass
+        # th(x)
+        elif key == "th(x)":
+            pass
+        # cth(x)
+        elif key == "cth(x)":
+            pass
+        #
+
         # Ввод цифр
-        elif key in "1234567890":
+        elif key in "1234567890π":
             self.numbers(key)
         # Очистка окон кроме истории
         elif key=="C":
@@ -279,7 +383,7 @@ class Calculator(QMainWindow):
             self.labelBig.setText("")
         # Смена функционала
         elif key=="↑" or key=="↓":
-            if self.buttonList[4][2].text() == '↑':
+            if self.buttonList[0][5].text() == '↑':
                 for row in range(countRowButton):
                     for col in range(countColumnButton+countAdditionalColumnButton):
                         self.buttonList[row][col].setText(self.buttonTextListAfter[row][col])
@@ -305,18 +409,13 @@ class Calculator(QMainWindow):
     def initUI(self):
         # Стили
         self.setStyleSheet("""
-            QWidget {
+            Calculator{
                 background-color: #8d2222;;
                 position:relative;
                 text-align: center;
                 border: 5px solid;
                 }
-            QLineEdit {
-                background-color: #6b0000;
-                border-radius: 20px;
-                color:#fff;
-                border: 5px solid;
-            }
+
             #labelBig {
                 background-color: #6b0000;
                 border-radius: 20px;
@@ -343,8 +442,7 @@ class Calculator(QMainWindow):
             border: 5px solid;
             font-size: 25px;
             }
-
-            }
+            #
         """)
 
         # Создание labels
@@ -367,17 +465,17 @@ class Calculator(QMainWindow):
         self.labelHistory.show()
 
         # Список клавиш до переключения
-        self.buttonTextList=[['+', '-', '×', '÷', 'C',  "eˣ",    "sin(x)"],
-                             ['7', '8', '9', '±', '<',  "10ˣ",   "cos(x)"],
-                             ['4', '5', '6', '(', ')',  "xʸ",    "tg(x)"],
-                             ['1', '2', '3', 'π', 'x²', "⅟ₓ",    "ctg(x)"],
-                             ['.', '0', '↑', 'e', '=',  "sh(x)", "ch(x)"]]
+        self.buttonTextList=[['+', '-', '×', '÷',  'C',  "↑",     "sin(x)"],
+                             ['7', '8', '9', '±',  '<',  "eˣ",    "cos(x)"],
+                             ['4', '5', '6', 'x²', '√x', "10ˣ",   "tg(x)"],
+                             ['1', '2', '3', 'xʸ', 'x!', "π",     "ctg(x)"],
+                             ['.', '0', '(', ')',  '=',  "sh(x)", "ch(x)"]]
         # Список клавиш после переключения
-        self.buttonTextListAfter=[['+', '-', '×', '÷', 'C',  "ln(x)", "arcsin(x)"],
-                                  ['7', '8', '9', '±', '<',  "lg(x)", "arccos(x)"],
-                                  ['4', '5', '6', '(', ')',  "x!",    "arctg(x)"],
-                                  ['1', '2', '3', 'π', '√x', "ʸ√x",   "arcctg(x)"],
-                                  ['.', '0', '↓', 'e', '=',  "th(x)", "cth(x)"]]
+        self.buttonTextListAfter=[['+', '-', '×', '÷',  'C',  "↓",     "arcsin(x)"],
+                                  ['7', '8', '9', '±',  '<',  "ln(x)", "arccos(x)"],
+                                  ['4', '5', '6', 'x²', '√x', "lg(x)", "arctg(x)"],
+                                  ['1', '2', '3', 'xʸ', 'x!', "ʸ√x",   "arcctg(x)"],
+                                  ['.', '0', '(', ')',  '=',  "th(x)", "cth(x)"]]
 
         self.buttonList=[]
         # Создание клавиш
@@ -386,13 +484,24 @@ class Calculator(QMainWindow):
 
             for col in range(countColumnButton+countAdditionalColumnButton):
                 btn = QPushButton(self.buttonTextList[row][col],self,objectName=("button"+str(row)+str(col)))
-                btn.resize(widthButton,hightButton)
+
                 btn.clicked.connect(self.calculation)
-                btn.move(board+(board+widthButton)*col,hightWindow*3//8+(board + hightButton)*row+heigthMenuBar)
-                self.buttonList[row].append(btn)
+
+
                 if col < countColumnButton:
+                    btn.resize(widthButton,hightButton)
+                    btn.move(board+(board+widthButton)*col,hightWindow*3//8+(board + hightButton)*row+heigthMenuBar)
+                    self.buttonList[row].append(btn)
                     self.buttonList[row][col].show()
+                elif col == countColumnButton:
+                    btn.resize(widthButton*2,hightButton)
+                    btn.move(board+(board+widthButton)*col,hightWindow*3//8+(board + hightButton)*row+heigthMenuBar)
+                    self.buttonList[row].append(btn)
+                    self.buttonList[row][col].hide()
                 else:
+                    btn.resize(widthButton*2,hightButton)
+                    btn.move((board+(board+widthButton)*(col+1)),hightWindow*3//8+(board + hightButton)*row+heigthMenuBar) # +1 надо поменять
+                    self.buttonList[row].append(btn)
                     self.buttonList[row][col].hide()
         # Кнопка очищения истории
         self.buttonDeleteHistory=QPushButton('del',self)
